@@ -2,6 +2,7 @@
 
 <html>
 <head>
+  <meta charset="utf-8"/>
   <script src="https://code.jquery.com/jquery-1.11.3.min.js"></script>
   <script src="https://code.createjs.com/easeljs-0.8.1.min.js"></script>
 </head>
@@ -25,15 +26,30 @@
   <p id="reason_loose"></p>
   
   <script>
-  var score = 1;
-  $("#submit_score").click( function () {
+  $(document).ready( function() {
+    "use strict";
+    $("#submit_score").click( function () {
       var msg = {
         "messageType": "SCORE",
-        "score": parseFloat($("#f_score").text()).toFixed(3)
+        "score": parseFloat($("#f_score").text())
       };
       console.log("Score", msg)
       window.parent.postMessage(msg, "*");
     });
+
+    // Request the service to set the resolution of the
+    // iframe correspondingly
+    var message =  {
+      messageType: "SETTING",
+      options: {
+        "width": 700, //Integer
+        "height": 300 //Integer
+        }
+    };
+    window.parent.postMessage(message, "*");
+  });
+  var score = 1;
+   
   function init(entry_from) {
     // code here.
     localStorage.clear();
@@ -215,7 +231,7 @@
         }
         document.getElementById("time").innerHTML += "<p>" +
         (level - 1) + "&nbsp;&nbsp;&nbsp;&nbsp; " + elapsed + " &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;" + (localStorage.getItem('W') * 2) + " &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;" + localStorage.getItem('D') + " &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;" + ID + " &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;" + TP + " &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;" + TPh + " &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;" + totalTP + "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;" + idealTP + "</p>";
-        score = score + 30/elapsed
+        score = score + 1;
         $("#f_score").html(score);
 
         //retrive calculate new and show for next round

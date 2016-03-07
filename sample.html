@@ -21,6 +21,7 @@
         "messageType": "SCORE",
         "score": parseFloat($("#score").text())
       };
+      console.log("Score", msg)
       window.parent.postMessage(msg, "*");
     });
 

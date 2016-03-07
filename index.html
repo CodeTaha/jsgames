@@ -1,0 +1,266 @@
+<!DOCTYPE HTML>
+
+<html>
+<head>
+  <script src="https://code.jquery.com/jquery-1.11.3.min.js"></script>
+  <script src="https://code.createjs.com/easeljs-0.8.1.min.js"></script>
+</head>
+
+<body onload="init('first');">
+  <input type="hidden" name="level" id="level" value="2">
+  <canvas id="demoCanvas" width="600" height="400" style="border:1px solid #000000;" onmouseout="outLostEvent()" onmouseup="drawLevel(event)"></canvas>
+  <div>
+    <p>
+      Level - - Time - - - Width - - Distance - - - - ID - - - - TP(Fitts) - - - - TP(Hicks) - - - - TP attained - - - - Level TP
+    </p>
+  </div>
+  <div id="time">
+  </div>
+  </br>
+  <div>
+    <b>Score:</b><span id="f_score">0</span>
+    <button id="submit_score">Submit score</button>
+  </div>
+
+  <p id="reason_loose"></p>
+  
+  <script>
+  var score = 1;
+  $("#submit_score").click( function () {
+      var msg = {
+        "messageType": "SCORE",
+        "score": parseFloat($("#f_score").text()).toFixed(3)
+      };
+      console.log("Score", msg)
+      window.parent.postMessage(msg, "*");
+    });
+  function init(entry_from) {
+    // code here.
+    localStorage.clear();
+    //iterate and spawn circles
+    var canvas = document.getElementById('demoCanvas');
+    var context = canvas.getContext("2d");
+    var stage = new createjs.Stage("demoCanvas");
+
+    //clear all non-sense if exists.
+    stage.update();
+
+    context.fillStyle = "blue";
+    context.font = "bold 18px Arial";
+    if (entry_from == 'first') {
+      context.fillText("Click to start Game!", 100, 100);
+
+    } else {
+      context.fillText("Game over biatch! Click to re-start..", 100, 100);
+    }
+
+
+    context.fillStyle = "#EE8833";
+    context.font = "bold 16px Arial";
+    context.fillText("Aim: Click on the circle bordered by another color. Good luck!", 120, 200);
+    var radius = 10;
+    context.beginPath();
+    context.arc(160, 350, radius, 0, 2 * Math.PI, false);
+    context.fillStyle = getRandomColor();
+    context.fill();
+    context.lineWidth = 2;
+    context.strokeStyle = getRandomColor();
+    context.stroke();
+
+    context.beginPath();
+    context.arc(160, 350, 1, 0, 2 * Math.PI, false);
+    context.fillStyle = 'white';
+    context.fill();
+
+    context.fillStyle = context.strokeStyle;
+    context.font = "bold 16px Arial";
+    context.fillText("Target circle might look like these!", 180, 355);
+
+    context.beginPath();
+    context.arc(460, 350, radius, 0, 2 * Math.PI, false);
+    context.fillStyle = getRandomColor();
+    context.fill();
+    context.lineWidth = 2;
+    context.strokeStyle = getRandomColor();
+    context.stroke();
+
+    context.beginPath();
+    context.arc(460, 350, 1, 0, 2 * Math.PI, false);
+    context.fillStyle = 'white';
+    context.fill();
+
+  }
+
+  function drawLevel(event) {
+    var stage = new createjs.Stage("demoCanvas");
+    var time_start;
+    var time_end;
+   
+    if (localStorage.getItem('X') == null) {
+      time_start = new Date();
+      localStorage.setItem('time', time_start);
+      //localStorage.setItem('X', event.x);
+      //localStorage.setItem('Y', event.y);
+
+      //localStorage.setItem('level', 14);
+    }
+    //validate is correct answer
+    //if true - draw next level, else loose!!
+    var click_x = event.x;
+    var click_y = event.y;
+    var canvas = document.getElementById("demoCanvas");
+    click_x -= canvas.offsetLeft;
+    click_y -= canvas.offsetTop;
+
+
+    lhs = Math.pow((localStorage.getItem('X') - click_x), 2) + Math.pow((localStorage.getItem('Y') - click_y), 2);
+    rhs = Math.pow(localStorage.getItem('R'), 2);
+
+    if (lhs > rhs && localStorage.getItem('X') != null) {
+      //not inside circle - fail
+      youLoose('GAME OVER! Wrong circle');
+
+
+    } else {
+      var level = document.getElementById('level').value;
+
+      //random size circles.. the target circle from 5-15 radius
+
+
+
+
+      if (level == 2) {
+        document.getElementById("time").innerHTML = "";
+        document.getElementById("reason_loose").innerHTML = " ";
+        localStorage.setItem('X', event.x);
+        localStorage.setItem('Y', event.y);
+
+      }
+      // code here.
+
+      //iterate and spawn circles
+      var canvas = document.getElementById('demoCanvas');
+      var min = 0;
+      var max_X = canvas.width;
+      var max_Y = canvas.height;
+
+
+      //console.log("X is: ", max_X);
+      for (i = 1; i <= (level - 1) * 10; i++) {
+        color = getRandomColor();
+        //console.log(color[0], color[1]);
+        if (i == (level - 1) * 10) {
+          color = "Red";
+        }
+        var x = Math.floor(Math.random() * (max_X - min + 1)) + min;
+        var y = Math.floor(Math.random() * (max_Y - min + 1)) + min;
+
+        var min_rad = 5;
+        var max_rad = 15;
+        var radius = Math.floor(Math.random() * (max_rad - min_rad + 1)) + min_rad;
+
+
+        //circle at each position
+        var circle = new createjs.Shape();
+        circle.graphics.beginFill(color).drawCircle(0, 0, radius);
+        if (i == (level - 1) * 10) {
+          //setStrokeStyle(2).beginStroke(color).
+          circle.graphics.beginFill(color).drawCircle(0, 0, 15 - level + 1);
+          circle.x = x;
+          circle.y = y;
+          stage.addChild(circle);
+
+          circle.graphics.beginFill(getRandomColor()).drawCircle(0, 0, 15 - level);
+          circle.x = x;
+          circle.y = y;
+          stage.addChild(circle);
+
+          circle.graphics.beginFill('white').drawCircle(0, 0, 1);
+        }
+        circle.x = x;
+        circle.y = y;
+        stage.addChild(circle);
+      }
+
+      stage.update();
+
+
+      //calculate time elapsed for the level and show
+      {
+        time_start = new Date(localStorage.getItem('time'));
+        time_end = new Date();
+
+        //elapsed in seconds.
+        elapsed = Math.abs(time_end - time_start) / 1000;
+        //save time end as timestart in memory
+        localStorage.setItem('time', time_end);
+
+        //calculate TP(Fitts)
+        //TP = ID / MT = log2 (D/We +1) / MT
+
+        var ID = Math.log(localStorage.getItem('D') / (localStorage.getItem('W') * 2));
+        var TP = ID / elapsed;
+
+        var Th = Math.log(((level - 1) * 10) + 1);
+        var TPh = Th / elapsed;
+
+        var totalTP = TP + TPh;
+
+        var idealTP = (ID + Th) / 1;
+        //show it to the user
+        if (level == 2) {
+          //var d = Math.sqrt(((x - localStorage.getItem('X')) * (x - localStorage.getItem('X'))) + ((y - localStorage.getItem('Y')) * (y - localStorage.getItem('Y'))));
+          //localStorage.setItem('D', d);
+          localStorage.setItem('W', 15);
+        }
+        document.getElementById("time").innerHTML += "<p>" +
+        (level - 1) + "&nbsp;&nbsp;&nbsp;&nbsp; " + elapsed + " &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;" + (localStorage.getItem('W') * 2) + " &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;" + localStorage.getItem('D') + " &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;" + ID + " &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;" + TP + " &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;" + TPh + " &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;" + totalTP + "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;" + idealTP + "</p>";
+        score = score + 30/elapsed
+        $("#f_score").html(score);
+
+        //retrive calculate new and show for next round
+        //calculate disance from current mouse position to the target.
+        var d = Math.sqrt(((x - localStorage.getItem('X')) * (x - localStorage.getItem('X'))) + ((y - localStorage.getItem('Y')) * (y - localStorage.getItem('Y'))));
+        var width = (15 - level + 1);
+      }
+
+      //set the last circle as correct answer
+      correct_answer(x, y, radius, d, width)
+      //saved answer
+      //update level
+      $('#level').val(++level);
+
+    }
+  }
+
+  function correct_answer(x, y, r, d, width) {
+    localStorage.setItem('X', x);
+    localStorage.setItem('Y', y);
+    localStorage.setItem('R', r);
+    localStorage.setItem('D', d);
+    localStorage.setItem('W', width);
+  }
+
+  function outLostEvent(event) {
+    youLoose('Lost, You left the playing area!');
+  }
+
+  function youLoose(reason) {
+    document.getElementById("reason_loose").innerHTML = reason;
+    //reset levels
+    $('#level').val(2);
+    //clear screen and display message
+    init('game_over');
+  }
+
+  function getRandomColor() {
+    var letters = '0123456789ABCDEF'.split('');
+    var color = '#';
+    for (var i = 0; i < 6; i++) {
+      color += letters[Math.floor(Math.random() * 16)];
+    }
+    return color;
+  }
+  </script>
+</body>
+</html>

@@ -11,9 +11,9 @@
   <input type="hidden" name="level" id="level" value="2">
   <canvas id="demoCanvas" width="600" height="400" style="border:1px solid #000000;" onmouseout="outLostEvent()" onmouseup="drawLevel(event)"></canvas>
   <div>
-    <p>
+    <!--<p>
       Level - - Time - - - Width - - Distance - - - - ID - - - - TP(Fitts) - - - - TP(Hicks) - - - - TP attained - - - - Level TP
-    </p>
+    </p>-->
   </div>
   <div id="time">
   </div>
@@ -43,9 +43,10 @@
       messageType: "SETTING",
       options: {
         "width": 700, //Integer
-        "height": 300 //Integer
+        "height": 700 //Integer
         }
     };
+    console.log(message)
     window.parent.postMessage(message, "*");
   });
   var score = 1;
@@ -229,8 +230,8 @@
           //localStorage.setItem('D', d);
           localStorage.setItem('W', 15);
         }
-        document.getElementById("time").innerHTML += "<p>" +
-        (level - 1) + "&nbsp;&nbsp;&nbsp;&nbsp; " + elapsed + " &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;" + (localStorage.getItem('W') * 2) + " &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;" + localStorage.getItem('D') + " &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;" + ID + " &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;" + TP + " &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;" + TPh + " &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;" + totalTP + "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;" + idealTP + "</p>";
+        /*document.getElementById("time").innerHTML += "<p>" +
+        (level - 1) + "&nbsp;&nbsp;&nbsp;&nbsp; " + elapsed + " &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;" + (localStorage.getItem('W') * 2) + " &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;" + localStorage.getItem('D') + " &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;" + ID + " &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;" + TP + " &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;" + TPh + " &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;" + totalTP + "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;" + idealTP + "</p>";*/
         score = score + 1;
         $("#f_score").html(score);
 

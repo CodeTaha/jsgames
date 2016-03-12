@@ -9,7 +9,7 @@
 
 <body onload="init('first');">
   <input type="hidden" name="level" id="level" value="2">
-  <canvas id="demoCanvas" width="600" height="400" style="border:1px solid #000000;" onmouseout="outLostEvent()" onmouseup="drawLevel(event)"></canvas>
+  <canvas id="demoCanvas" width="450" height="300" style="border:1px solid #000000;" onmouseout="outLostEvent()" onmouseup="drawLevel(event)"></canvas>
   <div>
     <!--<p>
       Level - - Time - - - Width - - Distance - - - - ID - - - - TP(Fitts) - - - - TP(Hicks) - - - - TP attained - - - - Level TP
@@ -42,8 +42,8 @@
     var message =  {
       messageType: "SETTING",
       options: {
-        "width": 700, //Integer
-        "height": 700 //Integer
+        "width": 500, //Integer
+        "height": 400 //Integer
         }
     };
     console.log(message)
